@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Modern Smith - Handcrafted Excellence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e6e8ea",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#3a0a00",
+                        "inverse-primary": "#ffb59f",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#ffb59f",
+                        "surface-container": "#eceef0",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary": "#4f5d70",
+                        "on-surface": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#39485a",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#677689",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-container": "#5f6570",
+                        "on-primary-fixed-variant": "#852400",
+                        "on-secondary-fixed": "#161c25",
+                        "on-secondary-fixed-variant": "#414752",
+                        "background": "#f7f9fb",
+                        "on-surface-variant": "#5a4139",
+                        "secondary-fixed-dim": "#c1c7d4",
+                        "tertiary-fixed": "#d4e4fa",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#ae3100",
+                        "outline": "#8e7068",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline-variant": "#e2bfb5",
+                        "primary-fixed": "#ffdbd0",
+                        "primary": "#aa3000",
+                        "primary-container": "#d04411",
+                        "surface-dim": "#d8dadc",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dde2f0",
+                        "on-tertiary-container": "#fdfcff",
+                        "on-tertiary-fixed": "#0d1c2d",
+                        "surface": "#f7f9fb",
+                        "on-primary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#b9c8de",
+                        "secondary-container": "#dde2f0",
+                        "on-primary": "#ffffff",
+                        "secondary": "#595f6a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "margin-tablet": "24px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Geist"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<nav class="sticky top-0 z-50 bg-surface dark:bg-surface-dim border-b border-tertiary/20 shadow-sm transition-all duration-300" id="main-nav">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
+<!-- Brand -->
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed tracking-tight flex items-center gap-2" href="#">
+                The Modern Smith
+            </a>
+<!-- Desktop Links -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#shop">Shop</a>
+<a class="text-secondary font-medium hover:text-primary transition-colors font-label-md text-label-md" href="#about">About</a>
+<a class="text-secondary font-medium hover:text-primary transition-colors font-label-md text-label-md" href="#contact">Contact</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-primary transition-colors hover:bg-surface-container-low p-2 rounded-full relative group">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-primary text-on-primary font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center border border-surface group-hover:scale-110 transition-transform">3</span>
+</button>
+<button class="md:hidden text-secondary p-2">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative w-full h-[70vh] min-h-[500px] flex items-center justify-center bg-surface-container-low overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-90 mix-blend-multiply filter contrast-125" data-alt="A cinematic, ultra-high-resolution photograph of a glowing, red-hot piece of steel being forged on a massive iron anvil in a modern industrial workshop. Sparks are flying dynamically. The lighting is dramatic, highlighting the texture of the metal and the industrial atmosphere. The scene evokes a sense of raw power, craftsmanship, and the robust 'Digital Forge' aesthetic with deep blacks and vibrant orange/red accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlo5tijGqJ-_v3tC_sW-ouT4J9vMKH6sXI3u1fTp50feP1yz5bAacuLcUuhqbZwUOjROm1ly_SFgf3tl-E8oW7urG5G46WxOwL9_NKORDRSGuYugbthMaAwo8yENoIm-apv6Xg8f8r4FejUZXLmphtJ5z88SpjHZyNN9ol13K6ifz9XL8C6AlwGjPXO5lbv1O8j8eQPeKrC3mgGp8RNouP3Lxwcp6568-lHMjnfsOTeY_IFvmo_wE')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-80"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-surface/80 via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 text-center md:text-left w-full max-w-container-max px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row items-center justify-between">
+<div class="max-w-2xl">
+<h1 class="font-display-lg text-display-lg text-on-background mb-4 drop-shadow-md">Handcrafted<br/><span class="text-primary">Excellence</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-lg">Forging raw materials into timeless, robust tools and artifacts. Built to last, designed to inspire.</p>
+<a class="inline-flex items-center justify-center bg-primary text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-[#852400] transition-colors shadow-sm active:scale-95 group" href="#shop">
+                    Shop Now
+                    <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 flex flex-col gap-24">
+<!-- Featured Products (Bento/Asymmetric) -->
+<section class="scroll-mt-24" id="shop">
+<div class="flex items-center justify-between mb-8 border-b border-tertiary/20 pb-4">
+<h2 class="font-headline-lg text-headline-lg text-on-background">Featured Works</h2>
+<a class="text-primary font-label-md text-label-md hover:underline flex items-center" href="#">View All <span class="material-symbols-outlined text-sm ml-1" data-icon="chevron_right">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Highlight Product (Spans 8 cols on desktop) -->
+<article class="col-span-1 md:col-span-8 group relative rounded-xl border border-tertiary/20 bg-surface overflow-hidden shadow-[0px_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col md:flex-row h-full min-h-[400px]">
+<div class="w-full md:w-3/5 h-64 md:h-full relative overflow-hidden">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A sleek, modern chef's knife resting on a slate gray stone surface. The blade features a striking Damascus steel pattern, gleaming under crisp, cool white light. The handle is made of dark, polished hardwood with subtle silver rivets. The composition is highly structured and tactile, fitting the sophisticated, robust industrial aesthetic of the brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkcwh63PihNVl4R4YQgwqIK-h1ivRE6boTsQpbts68ZGrx80QHJPfTcylnbgoWYNKJW9bVSkBjzLMAMZqmdVDI2Knj4KyIJCNOYtzxFrGh2TjwSVDB-mA2DEZPhron5ccGMEt74M4w9CN_7Ma9m1FBEUX5vzsfLP8G8Jo0FoTW7eKa3yF1mJ-nVF8Qlb_CGKao4T6EHiWWcgc-ilZk8RMn3yWKWZmWoqdy0MBgcR7JkwZZXy9F4SQ"/>
+</div>
+<div class="w-full md:w-2/5 p-6 flex flex-col justify-between bg-surface z-10">
+<div>
+<div class="inline-flex items-center px-2 py-1 bg-surface-container-low text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider rounded mb-3 border border-tertiary/10">Signature Series</div>
+<h3 class="font-headline-md text-headline-md text-on-background mb-2">The Apex Chef's Blade</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-3">Masterfully forged Damascus steel, balanced for precision and durability in the modern kitchen.</p>
+</div>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-tertiary/10">
+<span class="font-headline-md text-headline-md text-on-background">$345</span>
+<button aria-label="Add to cart" class="bg-primary text-on-primary p-2 rounded-lg hover:bg-[#852400] transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 2 (Spans 4 cols) -->
+<article class="col-span-1 md:col-span-4 group rounded-xl border border-tertiary/20 bg-surface overflow-hidden shadow-[0px_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full">
+<div class="w-full h-48 md:h-64 relative overflow-hidden bg-surface-container-low">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 mix-blend-darken" data-alt="A heavy-duty, minimalist cast iron skillet placed on a clean, light silver metallic table. The skillet has a smooth, matte black finish and a geometric, modern handle design. Soft, diffuse lighting highlights the solid, built-to-last construction and the subtle texture of the iron, reflecting an industrious and reliable brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxtw0I1KWclmT_I4F2B5G807O3ALgDQzqXkwpSY6Z1paIHA4lkWnf4K2AKNM-rry3dWbr5YmgR7rXtJ0HIPTS4kTf5qUFrKc7tJteQQnG6iExwr8_U1rGhhfcWYoSYkM-1VVbnyUovAtOwvH9VHq8LoktjUXNZFTCpl7rbbZGEWt4fghKFCMMS6x_TN4URdzdMd0eXCzCYK2qgjHS2v2MvSZ20XOsoL09I_1ulw48xIbAlA8belBw"/>
+</div>
+<div class="p-5 flex flex-col flex-grow">
+<h3 class="font-label-md text-label-md text-on-background font-bold mb-1">Foundry Skillet</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">A modernized classic, pre-seasoned and ready for high-heat performance.</p>
+<div class="flex items-center justify-between mt-auto pt-4">
+<span class="font-label-md text-label-md text-on-background font-semibold">$120</span>
+<button aria-label="Add to cart" class="text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors border border-transparent hover:border-tertiary/20">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 3 -->
+<article class="col-span-1 md:col-span-4 group rounded-xl border border-tertiary/20 bg-surface overflow-hidden shadow-[0px_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full">
+<div class="w-full h-48 md:h-56 relative overflow-hidden bg-surface-container-low">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A set of sleek, industrial-style steel bookends resting on a white shelf. The bookends are shaped like abstract anvils, featuring a brushed steel finish with sharp, precise edges. The lighting is stark and directional, creating distinct shadows that emphasize their solid, structural form and the modern corporate tactile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKGLSkghlEBolcVL68hGdQQFLogi09O07-wwggKK8NWRNZDIdnEWLU8jL6aWQSvyrQ0mcb1KKcTc7ZR2ODtIfQ00bdPsU5uKTV6BA8ukJ5qMQeOv1R9oOeU3F0b67dQ-TYJuYSmPO75ifGDkYfdva4XnJZcPNsl7EUuBhb8WQsQUlkDMuq6S1Hz-eXdMSnjDoxiVUjBPXsEitpfluvISemoL1HHh6MDHrNaPUZGcPL1PnmZqFwbjY"/>
+</div>
+<div class="p-5 flex flex-col flex-grow">
+<h3 class="font-label-md text-label-md text-on-background font-bold mb-1">Anvil Bookends</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Solid steel structural supports for your library.</p>
+<div class="flex items-center justify-between mt-auto pt-4">
+<span class="font-label-md text-label-md text-on-background font-semibold">$85</span>
+<button aria-label="Add to cart" class="text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors border border-transparent hover:border-tertiary/20">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 4 -->
+<article class="col-span-1 md:col-span-4 group rounded-xl border border-tertiary/20 bg-surface overflow-hidden shadow-[0px_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full">
+<div class="w-full h-48 md:h-56 relative overflow-hidden bg-surface-container-low">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A collection of handmade, heavy-duty brass and steel keychains arranged in a grid pattern on a dark slate background. The keychains feature robust carabiners and thick leather straps. The image is top-down, with crisp focus and dramatic lighting that highlights the metallic sheen and the high-trust, built-to-last quality of the hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmMiY7aC3uCpHSxirxpHK7iFEJT3vhbBD4dUsugpDlYJjtJO7GwPjsB-PDPYDl0efISzr9FRAYHLWaPKd1eByR4pRwNMlWG3_y0sNI3qr4Y3jYtJwdP2ZEaO1oIL1wP9HKe68SBrnq_g14yN6xXuoxabZACweMmxtq96kQbr0cwpgTGCPa6nix80r2EKBFBT6FETD4QsZxyakJW0gDYdmsrHXxrxOhtcV_7DjUEUvhml47AHR6_Hk"/>
+</div>
+<div class="p-5 flex flex-col flex-grow">
+<h3 class="font-label-md text-label-md text-on-background font-bold mb-1">Heavy-Duty Carabiner</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Forged brass and steel for everyday carry reliability.</p>
+<div class="flex items-center justify-between mt-auto pt-4">
+<span class="font-label-md text-label-md text-on-background font-semibold">$45</span>
+<button aria-label="Add to cart" class="text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors border border-transparent hover:border-tertiary/20">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 5 (Spans 4 cols) -->
+<article class="col-span-1 md:col-span-4 group rounded-xl border border-tertiary/20 bg-surface overflow-hidden shadow-[0px_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0px_10px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full">
+<div class="w-full h-48 md:h-56 relative overflow-hidden bg-surface-container-low">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="A pair of elegant, minimalist steel candle holders sitting on a pale concrete surface. The candle holders have a slender, geometric profile with a matte silver finish. Soft, warm ambient light contrasts with the cool tones of the steel and concrete, creating a sophisticated, structured composition typical of a modern digital forge identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnuMIeMKozwkIYleKLIZ9FQ7VIGhBp23QJtOBDy0RL1J5B4yNJ1NHVoBk7PCGSk7wIixRyQzZReBE9AXuhHGzSlKZNbF0Hxd3LYP_xbKW0aPkco9q-_4_zVDepAzci6yYv2RKTYpUjfrykNJ611Hr_mDhjDGa7FksM71TL9YGy_O8CVHAl-CdBW5wOqxepODkpYUrJdQQciOaCAXTfsRNtYHggI208cQ-c6sZMKVMaoJr5LzBv4Qg"/>
+</div>
+<div class="p-5 flex flex-col flex-grow">
+<h3 class="font-label-md text-label-md text-on-background font-bold mb-1">Minimalist Taper Holders</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Precision machined steel for a modern dining aesthetic.</p>
+<div class="flex items-center justify-between mt-auto pt-4">
+<span class="font-label-md text-label-md text-on-background font-semibold">$95</span>
+<button aria-label="Add to cart" class="text-primary hover:bg-surface-container-low p-2 rounded-lg transition-colors border border-transparent hover:border-tertiary/20">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- About Section (Glassmorphism inspired card over background) -->
+<section class="relative rounded-2xl overflow-hidden border border-tertiary/20 shadow-[0px_1px_3px_rgba(0,0,0,0.1)]" id="about">
+<div class="absolute inset-0 bg-surface-container-low z-0">
+<div class="w-full h-full bg-cover bg-center opacity-30 mix-blend-luminosity" data-alt="A wide, establishing shot of a modern, organized metalworking studio. Sparks are subtly visible in the background, out of focus. The foreground features a meticulously organized tool wall with various hammers, tongs, and precision measuring instruments mounted on a pegboard. The lighting is industrial, bright, and cool, emphasizing extreme data clarity and structured information density within the physical space." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA3kyhh85reKh7Ujbj3bRaNGawKfq4craeQDP9mWXBKkJmIPppSgx1032ALhkfdWIpsU1CbdpgbkwJor5thV8C3lj3U4XDdpjpPNYJTqgoCqBGX5sgtksfc6hKhdpzX-pyQ7CLiOr_vi4D6wfbe0lOYyKk4nazz-xJcnUJsn-gJTkgbBIMb5W4a4UTw75XHLkd1RGHiF61fCkA9zUrlDhM6S0ROw3Gl_tSQYZHrnM_yV_fdp2vUg3E')"></div>
+</div>
+<div class="relative z-10 p-8 md:p-16 flex flex-col md:flex-row items-center gap-12 backdrop-blur-sm bg-surface/80">
+<div class="w-full md:w-1/2 flex justify-center">
+<div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-surface shadow-md overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="A portrait of a skilled artisan blacksmith in a modern apron, standing proudly in their workshop. They are examining a freshly forged piece of metal. The expression is serious and focused, conveying high-trust and robust craftsmanship. The lighting is dramatic, highlighting the texture of the leather apron and the metallic sheen of the tools, aligning with the tactile, 'built-to-last' brand narrative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYecvZn5RIzJW6JVXv4I-5cg4QQmHGau8TWT-2Ym_AlcGgA6DZKk5UWDkg2UVo0ths8opCUTfgw_Nkig6I3IjbDrz8pYJ0eSPofjJq8fAbA2bLGuK2f_TvhBUZ36Rp25ayLxUG9UbeFuce8ajbHiauOWUGgRl_aFsjzcv1yJfKW59uoIT68gT7Ti8dW8zhdkGIxhzVJg-yTSXZ3yd4JBriDC2HMP7ag2btTMGbTJEBLrfJHwhI2N0"/>
+</div>
+</div>
+<div class="w-full md:w-1/2 text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-4">The Forge Heritage</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                        Founded on the principles of industrial strength and refined design, The Modern Smith merges traditional forging techniques with contemporary precision. Every piece is a testament to raw materials transformed through heat and intent. We believe in tools and artifacts that are as reliable as hardware but feel as agile as modern design.
+                    </p>
+<ul class="flex flex-col gap-3 mb-8">
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Sourced from raw, premium stock</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Hand-finished for a tactile edge</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Built for rigorous, lifelong use</span>
+</li>
+</ul>
+<button class="bg-tertiary text-on-tertiary font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-tertiary-container transition-colors shadow-sm">
+                        Read Our Story
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component mapped from JSON -->
+<footer class="w-full bg-inverse-surface dark:bg-surface-container-lowest text-inverse-primary dark:text-primary mt-auto border-t border-tertiary/30">
+<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-md text-headline-md text-inverse-primary font-bold tracking-tight">The Modern Smith</span>
+<span class="font-body-sm text-body-sm text-surface-variant">© 2024 SilverForge. Refined Commerce.</span>
+</div>
+<nav class="flex flex-wrap justify-center gap-6">
+<a class="font-label-sm text-label-sm text-surface-variant hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-surface-variant hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-surface-variant hover:text-white transition-colors" href="#">API Docs</a>
+<a class="font-label-sm text-label-sm text-surface-variant hover:text-white transition-colors" href="#">Status</a>
+</nav>
+<div class="flex gap-4">
+<!-- Social icons using Material Symbols as placeholders -->
+<a aria-label="Instagram" class="text-surface-variant hover:text-primary-fixed-dim transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+</a>
+<a aria-label="Twitter" class="text-surface-variant hover:text-primary-fixed-dim transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to handle nav scroll effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.getElementById('main-nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    nav.classList.add('shadow-md');
+                    nav.classList.remove('shadow-sm');
+                } else {
+                    nav.classList.add('shadow-sm');
+                    nav.classList.remove('shadow-md');
+                }
+            });
+        });
+    </script>
+</body></html>

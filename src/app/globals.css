@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --forge: #c23805; --slate: #272d37; --silver: #94a3b8; --canvas: #f7f9fb; }
+* { border-color: rgb(148 163 184 / 0.35); }
+body { color: #191c1e; background: var(--canvas); font-family: Inter, Arial, sans-serif; }
+
+@layer components {
+  .input { @apply rounded-lg border border-slate-400/60 bg-white px-3 py-2 text-sm outline-none transition focus:border-forge focus:ring-2 focus:ring-forge/20; }
+  .forge-card { @apply rounded-lg border border-slate-400/60 bg-white shadow-forge; }
+  .forge-button { @apply rounded-lg bg-forge px-4 py-2 text-sm font-medium text-white shadow-forge transition hover:bg-forge-dark hover:shadow-forge-raised disabled:cursor-not-allowed disabled:opacity-50; }
+  .forge-button-secondary { @apply rounded-lg border border-slate-500 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100; }
+}
