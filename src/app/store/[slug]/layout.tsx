@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CartProvider } from "@/lib/cart-context";
 
+export const dynamic = "force-dynamic";
+
 export default async function StoreLayout({
   children,
   params,

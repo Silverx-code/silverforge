@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, createSessionToken, setSessionCookie } from "@/lib/auth";
+import { createSessionToken, setSessionCookie } from "@/lib/auth";
+import { hashPassword } from "@/lib/password";
 import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 
 const signupSchema = z.object({
@@ -9,6 +10,9 @@ const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(200),
 });
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   if (isRateLimited(`signup:${getClientIp(req.headers)}`, 5, 60 * 60_000)) {

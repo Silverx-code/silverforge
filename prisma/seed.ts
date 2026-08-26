@@ -1,5 +1,5 @@
-import bcrypt from "bcryptjs";
 import { PrismaClient, SectionType } from "@prisma/client";
+import { hashPassword } from "../src/lib/password";
 
 const prisma = new PrismaClient();
 const sections: { sectionType: SectionType; sectionOrder: number; content: object }[] = [
@@ -11,7 +11,7 @@ const sections: { sectionType: SectionType; sectionOrder: number; content: objec
 ];
 
 async function main() {
-  const passwordHash = await bcrypt.hash("demo-password-123", 10);
+  const passwordHash = await hashPassword("demo-password-123");
   const user = await prisma.user.upsert({ where: { email: "demo@silverforge.test" }, update: {}, create: { name: "Demo Merchant", email: "demo@silverforge.test", passwordHash } });
   let store = await prisma.store.findUnique({ where: { slug: "modern-smith" } });
   if (!store) store = await prisma.store.create({ data: { ownerId: user.id, name: "The Modern Smith", slug: "modern-smith", description: "Handcrafted modern objects", isPublished: true } });

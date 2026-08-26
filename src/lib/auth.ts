@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -11,14 +10,6 @@ function getSecretKey() {
     throw new Error("AUTH_SECRET is not set. Copy .env.example to .env and set it.");
   }
   return new TextEncoder().encode(secret);
-}
-
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 10);
-}
-
-export async function verifyPassword(password: string, hash: string) {
-  return bcrypt.compare(password, hash);
 }
 
 export type SessionPayload = {
