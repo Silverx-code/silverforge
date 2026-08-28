@@ -22,9 +22,16 @@ function LoginForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch (err) {
+        // Response wasn't valid JSON
+      }
+
       if (!res.ok) {
-        setError(data.error ?? "Invalid email or password.");
+        setError(data?.error ?? `Server returned error (${res.status}). Please verify database connectivity/migrations and environment configuration.`);
         return;
       }
       const next = searchParams.get("next") ?? "/dashboard";
