@@ -190,7 +190,8 @@ To run this application locally, follow these simple steps:
    ```bash
    cp .env.example .env
    ```
-   - Ensure you specify a PostgreSQL connection string in `DATABASE_URL`.
+   - Ensure you specify a PostgreSQL connection string in `DATABASE_URL`. If using connection poolers (e.g. Supabase, PgBouncer, Neon), append `?pgbouncer=true&statement_cache_size=0` to prevent `42P05` prepared statement errors.
+   - Specify `DIRECT_URL` for direct connection (used by `prisma db push` / `prisma migrate`).
    - Generate a secure JWT secret for `AUTH_SECRET` (e.g., using `openssl rand -base64 32`).
 
 3. **Initialize Database Schema**:
