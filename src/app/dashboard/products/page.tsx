@@ -103,6 +103,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [inventoryQuantity, setInventoryQuantity] = useState("1");
   const [error, setError] = useState<string | null>(null);
 
@@ -112,7 +113,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
     const res = await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, price: Number(price), inventoryQuantity: Number(inventoryQuantity) }),
+      body: JSON.stringify({ name, description, image: image || null, price: Number(price), inventoryQuantity: Number(inventoryQuantity) }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -152,6 +153,13 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={2}
+      />
+      <input
+        className="input"
+        placeholder="Product image URL (optional)"
+        type="url"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
       />
       <input
         className="input"

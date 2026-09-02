@@ -8,6 +8,16 @@
 * { border-color: rgb(148 163 184 / 0.35); }
 body { color: #191c1e; background: var(--canvas); font-family: Inter, Arial, sans-serif; }
 
+@keyframes customer-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes float-card { 0%, 100% { transform: translateY(0) rotateY(-6deg); } 50% { transform: translateY(-8px) rotateY(-2deg); } }
+.customer-enter { animation: customer-enter .55s ease-out both; }
+.customer-enter-delay { animation: customer-enter .55s .12s ease-out both; }
+.store-product-card { transform-style: preserve-3d; transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease; }
+.store-product-card:hover { transform: perspective(1000px) rotateY(-5deg) rotateX(2deg) translateY(-6px); box-shadow: 16px 18px 28px rgb(15 23 42 / .16); }
+.store-product-card:active { transform: perspective(1000px) rotateY(4deg) scale(.98); }
+.hero-store-card { animation: float-card 5s ease-in-out infinite; transform-style: preserve-3d; }
+@media (prefers-reduced-motion: reduce) { .customer-enter, .customer-enter-delay, .hero-store-card { animation: none; } .store-product-card, .store-product-card:hover, .store-product-card:active { transform: none; transition: none; } }
+
 @layer components {
   .input { @apply rounded-lg border border-slate-400/60 bg-white px-3 py-2 text-sm outline-none transition focus:border-forge focus:ring-2 focus:ring-forge/20; }
   .forge-card { @apply rounded-lg border border-slate-400/60 bg-white shadow-forge; }

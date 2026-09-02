@@ -2,12 +2,15 @@ export type ButtonStyle = "ROUNDED" | "SQUARE" | "PILL";
 export type SectionType = "HEADER" | "HERO" | "FEATURED_PRODUCTS" | "PROMO_BANNER" | "ABOUT" | "FOOTER";
 export type StockStatus = "IN_STOCK" | "OUT_OF_STOCK";
 export type OrderStatus = "PENDING" | "CONFIRMED" | "FULFILLED" | "CANCELLED";
+export type AccountType = "SELLER" | "CUSTOMER";
 
 export interface User {
   id: string;
   email: string;
   passwordHash: string;
   name: string | null;
+  accountType: AccountType;
+  onboardingCompleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +22,7 @@ export interface Store {
   slug: string;
   description: string | null;
   logo: string | null;
+  whatsappNumber: string | null;
   primaryColor: string;
   backgroundColor: string;
   font: string;

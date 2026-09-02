@@ -7,6 +7,7 @@ export function toStore(row: Row): Store {
   return {
     id: String(row.id), ownerId: String(row.owner_id), name: String(row.name), slug: String(row.slug),
     description: row.description as string | null, logo: row.logo as string | null,
+    whatsappNumber: row.whatsapp_number as string | null,
     primaryColor: String(row.primary_color), backgroundColor: String(row.background_color),
     font: String(row.font), buttonStyle: row.button_style as Store["buttonStyle"],
     isPublished: Boolean(row.is_published), createdAt: row.created_at as Date, updatedAt: row.updated_at as Date,

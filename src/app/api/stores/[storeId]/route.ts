@@ -8,6 +8,7 @@ const updateStoreSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   description: z.string().max(500).optional(),
   logo: z.string().url().optional().nullable(),
+  whatsappNumber: z.string().transform((value) => value.replace(/\D/g, "")).refine((value) => value.length >= 8 && value.length <= 15, "Enter a WhatsApp number with country code.").optional().nullable(),
   primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   font: z.string().min(1).max(60).optional(),
@@ -24,6 +25,7 @@ function rowToStore(row: any): Store | null {
     slug: row.slug,
     description: row.description,
     logo: row.logo,
+    whatsappNumber: row.whatsapp_number,
     primaryColor: row.primary_color,
     backgroundColor: row.background_color,
     font: row.font,
@@ -75,6 +77,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { storeId: s
   if (data.name !== undefined) { updates.push(`name = $${idx++}`); values.push(data.name); }
   if (data.description !== undefined) { updates.push(`description = $${idx++}`); values.push(data.description); }
   if (data.logo !== undefined) { updates.push(`logo = $${idx++}`); values.push(data.logo); }
+  if (data.whatsappNumber !== undefined) { updates.push(`whatsapp_number = $${idx++}`); values.push(data.whatsappNumber); }
   if (data.primaryColor !== undefined) { updates.push(`primary_color = $${idx++}`); values.push(data.primaryColor); }
   if (data.backgroundColor !== undefined) { updates.push(`background_color = $${idx++}`); values.push(data.backgroundColor); }
   if (data.font !== undefined) { updates.push(`font = $${idx++}`); values.push(data.font); }

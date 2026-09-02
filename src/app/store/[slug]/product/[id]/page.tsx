@@ -15,6 +15,10 @@ export default async function ProductPage({
   const result = await query("SELECT * FROM products WHERE id = $1 AND store_id = $2 LIMIT 1", [params.id, store.id]);
   if (!result.rows[0]) notFound();
   const product = toProduct(result.rows[0]);
+  const whatsappMessage = `Hello ${store.name}, I would like to buy ${product.name} for ₦${Number(product.price).toLocaleString()}. Please let me know if it is available.`;
+  const whatsappLink = store.whatsappNumber
+    ? `https://wa.me/${store.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(whatsappMessage)}`
+    : null;
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
@@ -43,6 +47,17 @@ export default async function ProductPage({
               outOfStock={product.stockStatus === "OUT_OF_STOCK"}
             />
           </div>
+          {whatsappLink && (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex items-center gap-2 rounded px-6 py-3 text-sm font-semibold text-white transition hover:scale-[1.02]"
+              style={{ background: "#25D366", borderRadius: "var(--store-radius)" }}
+            >
+              Buy on WhatsApp
+            </a>
+          )}
         </div>
       </div>
     </div>

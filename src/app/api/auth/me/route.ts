@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
 
-  const userRes = await query(`SELECT id, email, name FROM users WHERE id = $1 LIMIT 1`, [session.userId]);
+  const userRes = await query(`SELECT id, email, name, account_type, onboarding_completed FROM users WHERE id = $1 LIMIT 1`, [session.userId]);
   const user = userRes.rows[0];
 
   if (!user) {
@@ -21,6 +21,8 @@ export async function GET() {
     id: user.id,
     email: user.email,
     name: user.name,
+    accountType: user.account_type,
+    onboardingCompleted: user.onboarding_completed,
     stores: storesRes.rows,
   });
 }

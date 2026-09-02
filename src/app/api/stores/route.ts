@@ -7,6 +7,7 @@ import { createId } from "@/lib/id";
 const createStoreSchema = z.object({
   name: z.string().min(1).max(120),
   description: z.string().max(500).optional(),
+  whatsappNumber: z.string().transform((value) => value.replace(/\D/g, "")).refine((value) => value.length >= 8 && value.length <= 15, "Enter a WhatsApp number with country code."),
   slug: z
     .string()
     .min(2)
@@ -90,8 +91,8 @@ export async function POST(req: NextRequest) {
 
     const storeId = createId("sto");
     await client.query(
-      `INSERT INTO stores (id, owner_id, name, description, slug) VALUES ($1, $2, $3, $4, $5)`,
-      [storeId, session.userId, parsed.data.name, parsed.data.description || null, parsed.data.slug]
+      `INSERT INTO stores (id, owner_id, name, description, slug, whatsapp_number) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [storeId, session.userId, parsed.data.name, parsed.data.description || null, parsed.data.slug, parsed.data.whatsappNumber]
     );
 
     for (const s of DEFAULT_SECTIONS) {

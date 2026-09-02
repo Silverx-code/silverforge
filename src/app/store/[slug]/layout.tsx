@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { CartProvider } from "@/lib/cart-context";
 import { getPublishedStore } from "@/lib/store-data";
+import { getSession } from "@/lib/auth";
+import { query } from "@/lib/db";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +14,13 @@ export default async function StoreLayout({
   children: React.ReactNode;
   params: { slug: string };
 }) {
+  // Visitors can browse without an account. Signed-in accounts must finish their
+  // short tutorial before shopping so both roles receive the guided introduction.
+  const session = await getSession();
+  if (session) {
+    const user = await query("SELECT onboarding_completed FROM users WHERE id = $1 LIMIT 1", [session.userId]);
+    if (user.rows[0] && !user.rows[0].onboarding_completed) redirect("/onboarding");
+  }
   const store = await getPublishedStore(params.slug);
   if (!store) notFound();
 

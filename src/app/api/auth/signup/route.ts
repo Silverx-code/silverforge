@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     const token = await createSessionToken({ userId, email });
     await setSessionCookie(token);
 
-    return NextResponse.json({ id: userId, email, name: name || null });
+    return NextResponse.json({ id: userId, email, name: name || null, onboardingCompleted: false });
   } catch (err: any) {
     console.error("Signup error details:", err);
     return NextResponse.json(

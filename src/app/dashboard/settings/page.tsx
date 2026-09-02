@@ -12,6 +12,7 @@ type Store = {
   buttonStyle: "ROUNDED" | "SQUARE" | "PILL";
   isPublished: boolean;
   slug: string;
+  whatsappNumber: string | null;
 };
 
 export default function SettingsPage() {
@@ -51,6 +52,19 @@ export default function SettingsPage() {
       <p className="mt-1 text-sm text-ink/60">silverforge.com/store/{store.slug}</p>
 
       <div className="mt-8 flex flex-col gap-4">
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="text-ink/70">WhatsApp business number</span>
+          <input
+            className="input"
+            type="tel"
+            inputMode="tel"
+            value={store.whatsappNumber ?? ""}
+            onChange={(e) => save({ whatsappNumber: e.target.value })}
+            placeholder="2348012345678"
+          />
+          <span className="text-xs text-ink/50">Include the country code; this powers the customer Buy on WhatsApp button.</span>
+        </label>
+
         <label className="flex flex-col gap-1 text-sm">
           <span className="text-ink/70">Primary color</span>
           <input

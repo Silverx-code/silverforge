@@ -26,6 +26,7 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
     slug: storeRow.slug,
     description: storeRow.description,
     logo: storeRow.logo,
+    whatsappNumber: storeRow.whatsapp_number,
     primaryColor: storeRow.primary_color,
     backgroundColor: storeRow.background_color,
     font: storeRow.font,

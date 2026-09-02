@@ -34,7 +34,7 @@ function LoginForm() {
         setError(data?.error ?? `Server returned error (${res.status}). Please verify database connectivity/migrations and environment configuration.`);
         return;
       }
-      const next = searchParams.get("next") ?? "/dashboard";
+      const next = searchParams.get("next") ?? (!data?.onboardingCompleted ? "/onboarding" : data?.accountType === "CUSTOMER" ? "/" : "/dashboard");
       router.push(next);
       router.refresh();
     } finally {

@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   name VARCHAR(255),
+  account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER' CHECK (account_type IN ('SELLER', 'CUSTOMER')),
+  onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -16,6 +18,7 @@ CREATE TABLE IF NOT EXISTS stores (
   slug VARCHAR(255) UNIQUE NOT NULL,
   description TEXT,
   logo TEXT,
+  whatsapp_number VARCHAR(20),
   primary_color VARCHAR(50) DEFAULT '#111114',
   background_color VARCHAR(50) DEFAULT '#FAFAF8',
   font VARCHAR(100) DEFAULT 'Inter',
@@ -81,6 +84,11 @@ CREATE TABLE IF NOT EXISTS order_items (
   quantity INTEGER NOT NULL,
   price NUMERIC(12, 2) NOT NULL
 );
+
+-- These keep existing databases compatible when `npm run db:setup` is run again.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE stores ADD COLUMN IF NOT EXISTS whatsapp_number VARCHAR(20);
 
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
 BEGIN
