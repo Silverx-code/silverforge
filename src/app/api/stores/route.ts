@@ -103,6 +103,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Creating the store is the final seller-onboarding step. Keep the state
+    // change in this transaction so a seller is never asked to onboard again.
+    await client.query(
+      "UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE WHERE id = $1",
+      [session.userId]
+    );
+
     await client.query("COMMIT");
 
     const newStoreRes = await query(`SELECT * FROM stores WHERE id = $1`, [storeId]);

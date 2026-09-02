@@ -8,7 +8,7 @@ This guide describes the current application, as implemented. SilverForge is a m
 
 Every new account now completes a short, role-specific tutorial before using account features:
 
-- **Sellers** learn the launch flow, then create their store. Completing the tutorial is recorded only after the store is created.
+- **Sellers** learn the launch flow, then create their store. Creating that store completes onboarding atomically, so later sign-ins go straight to the dashboard.
 - **Customers** learn how published stores, per-store carts, and checkout work, then start browsing.
 - Visitors who have not created an account can still open a shared published-store link. A signed-in account with incomplete onboarding is redirected to `/onboarding` before it can browse a store.
 
@@ -162,7 +162,7 @@ Customer storefront ─► public store/checkout API ┘
 
 | File | Logic / responsibility |
 | --- | --- |
-| `src/app/dashboard/layout.tsx` | Server-side guard and dashboard shell. Requires completed onboarding and an owned store, otherwise redirects to onboarding; supplies navigation and public-store link. |
+| `src/app/dashboard/layout.tsx` | Server-side guard and dashboard shell. Any authenticated account with an owned store enters the dashboard directly; accounts without a store are redirected to onboarding. |
 | `src/app/dashboard/page.tsx` | Dashboard overview that summarizes the merchant's products, orders, and publishing state. |
 | `src/app/dashboard/logout-button.tsx` | Client button that calls the logout endpoint and returns to the landing page. |
 | `src/app/dashboard/products/page.tsx` | Product management screen. Loads products and submits create, edit, and delete requests. |
@@ -195,7 +195,7 @@ Customer storefront ─► public store/checkout API ┘
 
 | File | Logic / responsibility |
 | --- | --- |
-| `src/app/api/stores/route.ts` | Creates one store for the signed-in user, validates its unique slug, and atomically adds six default sections. |
+| `src/app/api/stores/route.ts` | Creates one store for the signed-in user, validates its unique slug, adds six default sections, and atomically completes seller onboarding. |
 | `src/app/api/stores/[storeId]/route.ts` | Lets only the owner read or patch store details, theme fields, and publication status. |
 | `src/app/api/products/route.ts` | Lists the owner's products and validates/creates new products. It derives stock status from quantity and explicit out-of-stock choice. |
 | `src/app/api/products/[id]/route.ts` | Ensures ownership before updating a product or deleting one with no order history. |

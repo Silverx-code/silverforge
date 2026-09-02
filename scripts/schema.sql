@@ -89,6 +89,9 @@ CREATE TABLE IF NOT EXISTS order_items (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE stores ADD COLUMN IF NOT EXISTS whatsapp_number VARCHAR(20);
+-- Existing store owners have already completed the original creation flow.
+UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE
+WHERE EXISTS (SELECT 1 FROM stores WHERE stores.owner_id = users.id);
 
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
 BEGIN
