@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { pool, query } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { createId } from "@/lib/id";
 
 const createStoreSchema = z.object({
   name: z.string().min(1).max(120),
@@ -64,38 +65,51 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // MVP: one store per user.
-  const existing = await prisma.store.findFirst({ where: { ownerId: session.userId } });
-  if (existing) {
-    return NextResponse.json(
-      { error: "You already have a store. Multi-store per user isn't supported yet." },
-      { status: 409 }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // MVP: one store per user.
+    const existingRes = await client.query(`SELECT id FROM stores WHERE owner_id = $1 LIMIT 1`, [session.userId]);
+    if (existingRes.rows.length > 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { error: "You already have a store. Multi-store per user isn't supported yet." },
+        { status: 409 }
+      );
+    }
+
+    const slugRes = await client.query(`SELECT id FROM stores WHERE slug = $1 LIMIT 1`, [parsed.data.slug]);
+    if (slugRes.rows.length > 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json(
+        { error: "That store address is already taken." },
+        { status: 409 }
+      );
+    }
+
+    const storeId = createId("sto");
+    await client.query(
+      `INSERT INTO stores (id, owner_id, name, description, slug) VALUES ($1, $2, $3, $4, $5)`,
+      [storeId, session.userId, parsed.data.name, parsed.data.description || null, parsed.data.slug]
     );
+
+    for (const s of DEFAULT_SECTIONS) {
+      const secId = createId("sec");
+      await client.query(
+        `INSERT INTO sections (id, store_id, section_type, content, section_order) VALUES ($1, $2, $3, $4, $5)`,
+        [secId, storeId, s.sectionType, JSON.stringify(s.content), s.order]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    const newStoreRes = await query(`SELECT * FROM stores WHERE id = $1`, [storeId]);
+    return NextResponse.json(newStoreRes.rows[0], { status: 201 });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
-
-  const slugTaken = await prisma.store.findUnique({ where: { slug: parsed.data.slug } });
-  if (slugTaken) {
-    return NextResponse.json(
-      { error: "That store address is already taken." },
-      { status: 409 }
-    );
-  }
-
-  const store = await prisma.store.create({
-    data: {
-      ownerId: session.userId,
-      name: parsed.data.name,
-      description: parsed.data.description,
-      slug: parsed.data.slug,
-      sections: {
-        create: DEFAULT_SECTIONS.map((s) => ({
-          sectionType: s.sectionType,
-          sectionOrder: s.order,
-          content: s.content,
-        })),
-      },
-    },
-  });
-
-  return NextResponse.json(store, { status: 201 });
 }

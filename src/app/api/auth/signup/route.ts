@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { query } from "@/lib/db";
 import { createSessionToken, setSessionCookie } from "@/lib/auth";
 import { hashPassword } from "@/lib/password";
 import { getClientIp, isRateLimited } from "@/lib/rate-limit";
+import { createId } from "@/lib/id";
 
 const signupSchema = z.object({
   name: z.string().min(1).max(120).optional(),
@@ -28,10 +29,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, password } = parsed.data;
+    const { name, password } = parsed.data;
+    const email = parsed.data.email.trim().toLowerCase();
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
+    const existingRes = await query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
+    if (existingRes.rows.length > 0) {
       return NextResponse.json(
         { error: "An account with that email already exists." },
         { status: 409 }
@@ -39,14 +41,17 @@ export async function POST(req: NextRequest) {
     }
 
     const passwordHash = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: { email, name, passwordHash },
-    });
+    const userId = createId("usr");
+    
+    await query(
+      `INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
+      [userId, email, passwordHash, name || null]
+    );
 
-    const token = await createSessionToken({ userId: user.id, email: user.email });
+    const token = await createSessionToken({ userId, email });
     await setSessionCookie(token);
 
-    return NextResponse.json({ id: user.id, email: user.email, name: user.name });
+    return NextResponse.json({ id: userId, email, name: name || null });
   } catch (err: any) {
     console.error("Signup error details:", err);
     return NextResponse.json(

@@ -88,7 +88,7 @@ silverforge/
 ## File-by-File Breakdown
 
 ### Root-Level Configurations
-* **`package.json`**: Declares dependencies (`next`, `react`, `prisma`, `bcryptjs`, `jose`, `zod`, `tsx`), scripts (`dev`, `build`, `lint`, `test`), and developer tools.
+* **`package.json`**: Declares the Next.js application, PostgreSQL driver (`pg`), authentication, validation, and developer tooling.
 * **`tsconfig.json`**: Implements TypeScript path mapping `~/` to `./src/` and sets up strict type safety rules suitable for Next.js App Router applications.
 * **`tailwind.config.ts`**: Merges standard Tailwind styling utility with custom colors, fonts (Geist, Inter), spacing units, and radius classes matching the brand design spec.
 * **`next.config.mjs`**: Next.js framework-level bundler options.
@@ -96,14 +96,14 @@ silverforge/
 * **`.eslintrc.json`**: Establishes rigorous standard syntax formatting to prevent development errors.
 * **`.gitignore`**: Excludes workspace build directories (`.next/`), dependency folders (`node_modules/`), test coverage reports, local environment configurations (`.env`), and binary files from being tracked by git.
 
-### Database Layer (`prisma/`)
-* **`prisma/schema.prisma`**: The core source of truth for the project's relational model. Includes definitions for:
+### Database Layer (`scripts/` and `src/lib/db.ts`)
+* **`scripts/schema.sql`**: The PostgreSQL source of truth for the relational model. It includes:
   - `User`: Handles account information and password authentication.
   - `Store`: Operates as the **tenant boundary**. Holds custom settings like brand colors (`primaryColor`, `backgroundColor`), font families, button border styles (`ButtonStyle` enum: ROUNDED, SQUARE, PILL), and publication status.
   - `Section`: Represents modular sections of a customized storefront homepage (`SectionType` enum: HEADER, HERO, FEATURED_PRODUCTS, PROMO_BANNER, ABOUT, FOOTER). Stores text and imagery payloads using Postgres-compatible JSON formats.
   - `Product`: Manages product names, descriptions, images, prices (Decimal data types for precision), stock availability, and direct stock control status.
   - `Order` & `OrderItem`: Tracks customer shipping requests, line items, and fulfillment stages (`OrderStatus` enum: PENDING, CONFIRMED, FULFILLED, CANCELLED).
-* **`prisma/seed.ts`**: Installs mock databases simulating live environments for immediate debugging. Includes configurations for "Urban Threads" and "Glow by Ada".
+* **`scripts/setup-db.ts`** applies the idempotent SQL schema, and **`scripts/seed.ts`** inserts the optional demo store.
 
 ### Testing (`tests/`)
 * **`tests/money.test.ts`**: Contains automated assertions using the Node-native test runner (`node:test`). Validates that decimal arithmetic calculates multi-item orders correctly with no rounding issues.
@@ -114,7 +114,7 @@ silverforge/
   - Redirects logged-in users with existing stores away from `/onboarding` to `/dashboard`.
 * **`src/lib/auth.ts`**: Custom session mechanism built directly on `jose`. Creates encrypted JWT payload strings, seals them, and appends them to client cookies.
 * **`src/lib/tenant.ts`**: Extracts the current authenticated user's store from the DB using the active session token. Blocks unauthorized access to prevent data leaks.
-* **`src/lib/prisma.ts`**: Ensures only a single connection pool instance of Prisma Client is shared across Next.js's hot-reload modules, preventing database connection exhaustion.
+* **`src/lib/db.ts`**: Provides the shared PostgreSQL connection pool used by pages and API routes.
 * **`src/lib/money.ts`**: Uses `Prisma.Decimal` to calculate order lines accurately, avoiding JavaScript floating-point errors (e.g., `0.1 + 0.2 = 0.30000000000000004`).
 * **`src/lib/password.ts`**: Hashing and comparative evaluation of user passwords via `bcryptjs`.
 * **`src/lib/rate-limit.ts`**: Simple rate limiter helper to secure authentication endpoints against brute-force attacks.
@@ -190,14 +190,13 @@ To run this application locally, follow these simple steps:
    ```bash
    cp .env.example .env
    ```
-   - Ensure you specify a PostgreSQL connection string in `DATABASE_URL`. If using connection poolers (e.g. Supabase, PgBouncer, Neon), append `?pgbouncer=true&statement_cache_size=0` to prevent `42P05` prepared statement errors.
-   - Specify `DIRECT_URL` for direct connection (used by `prisma db push` / `prisma migrate`).
+   - Ensure you specify a PostgreSQL connection string in `DATABASE_URL`.
    - Generate a secure JWT secret for `AUTH_SECRET` (e.g., using `openssl rand -base64 32`).
 
 3. **Initialize Database Schema**:
    Deploy the relational mapping onto your active local/hosted database instance:
    ```bash
-   npm run db:push
+   npm run db:setup
    ```
 
 4. **Seed Demo Data (Optional)**:

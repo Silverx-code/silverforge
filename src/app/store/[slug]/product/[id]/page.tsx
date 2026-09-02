@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import AddToCartButton from "../../add-to-cart-button";
+import { query } from "@/lib/db";
+import { getPublishedStore, toProduct } from "@/lib/store-data";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +10,11 @@ export default async function ProductPage({
 }: {
   params: { slug: string; id: string };
 }) {
-  const store = await prisma.store.findUnique({ where: { slug: params.slug } });
-  if (!store || !store.isPublished) notFound();
-
-  const product = await prisma.product.findUnique({ where: { id: params.id } });
-  if (!product || product.storeId !== store.id) notFound();
+  const store = await getPublishedStore(params.slug);
+  if (!store) notFound();
+  const result = await query("SELECT * FROM products WHERE id = $1 AND store_id = $2 LIMIT 1", [params.id, store.id]);
+  if (!result.rows[0]) notFound();
+  const product = toProduct(result.rows[0]);
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">

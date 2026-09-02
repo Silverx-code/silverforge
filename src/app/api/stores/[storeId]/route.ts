@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { query } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { Store } from "@/types/db";
 
 const updateStoreSchema = z.object({
   name: z.string().min(1).max(120).optional(),
@@ -14,8 +15,28 @@ const updateStoreSchema = z.object({
   isPublished: z.boolean().optional(),
 });
 
+function rowToStore(row: any): Store | null {
+  if (!row) return null;
+  return {
+    id: row.id,
+    ownerId: row.owner_id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description,
+    logo: row.logo,
+    primaryColor: row.primary_color,
+    backgroundColor: row.background_color,
+    font: row.font,
+    buttonStyle: row.button_style,
+    isPublished: row.is_published,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 async function assertOwnership(storeId: string, userId: string) {
-  const store = await prisma.store.findUnique({ where: { id: storeId } });
+  const res = await query(`SELECT * FROM stores WHERE id = $1 LIMIT 1`, [storeId]);
+  const store = rowToStore(res.rows[0]);
   if (!store || store.ownerId !== userId) return null;
   return store;
 }
@@ -46,10 +67,30 @@ export async function PATCH(req: NextRequest, { params }: { params: { storeId: s
     );
   }
 
-  const updated = await prisma.store.update({
-    where: { id: store.id },
-    data: parsed.data,
-  });
+  const data = parsed.data;
+  const updates: string[] = [];
+  const values: any[] = [];
+  let idx = 1;
 
-  return NextResponse.json(updated);
+  if (data.name !== undefined) { updates.push(`name = $${idx++}`); values.push(data.name); }
+  if (data.description !== undefined) { updates.push(`description = $${idx++}`); values.push(data.description); }
+  if (data.logo !== undefined) { updates.push(`logo = $${idx++}`); values.push(data.logo); }
+  if (data.primaryColor !== undefined) { updates.push(`primary_color = $${idx++}`); values.push(data.primaryColor); }
+  if (data.backgroundColor !== undefined) { updates.push(`background_color = $${idx++}`); values.push(data.backgroundColor); }
+  if (data.font !== undefined) { updates.push(`font = $${idx++}`); values.push(data.font); }
+  if (data.buttonStyle !== undefined) { updates.push(`button_style = $${idx++}`); values.push(data.buttonStyle); }
+  if (data.isPublished !== undefined) { updates.push(`is_published = $${idx++}`); values.push(data.isPublished); }
+
+  updates.push(`updated_at = NOW()`);
+
+  if (updates.length > 1) {
+    values.push(store.id);
+    const updateRes = await query(
+      `UPDATE stores SET ${updates.join(", ")} WHERE id = $${idx} RETURNING *`,
+      values
+    );
+    return NextResponse.json(rowToStore(updateRes.rows[0]));
+  }
+
+  return NextResponse.json(store);
 }
