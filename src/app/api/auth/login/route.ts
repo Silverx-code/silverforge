@@ -38,10 +38,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
+    // A store is definitive proof that this seller has finished setup. This
+    // also repairs accounts created before onboarding state was introduced.
+    const isSuperAdmin = email === process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+    if (isSuperAdmin && user.account_type !== "SUPER_ADMIN") await query("UPDATE users SET account_type = 'SUPER_ADMIN', onboarding_completed = TRUE WHERE id = $1", [user.id]);
+    const storeRes = await query(`SELECT id FROM stores WHERE owner_id = $1 LIMIT 1`, [user.id]);
+    const ownsStore = storeRes.rows.length > 0;
+    const onboardingCompleted = isSuperAdmin || ownsStore || Boolean(user.onboarding_completed);
+    const accountType = isSuperAdmin ? "SUPER_ADMIN" : ownsStore ? "SELLER" : user.account_type;
+    if (ownsStore && (!user.onboarding_completed || user.account_type !== "SELLER")) {
+      await query(
+        "UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE WHERE id = $1",
+        [user.id]
+      );
+    }
+
     const token = await createSessionToken({ userId: user.id, email: user.email });
     await setSessionCookie(token);
 
-    return NextResponse.json({ id: user.id, email: user.email, name: user.name, accountType: user.account_type, onboardingCompleted: user.onboarding_completed });
+    return NextResponse.json({ id: user.id, email: user.email, name: user.name, accountType, onboardingCompleted });
   } catch (err: any) {
     console.error("Login error details:", err);
     return NextResponse.json(

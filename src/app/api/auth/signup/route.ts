@@ -42,16 +42,17 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await hashPassword(password);
     const userId = createId("usr");
+    const isSuperAdmin = email === process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
     
     await query(
-      `INSERT INTO users (id, email, password_hash, name) VALUES ($1, $2, $3, $4)`,
-      [userId, email, passwordHash, name || null]
+      `INSERT INTO users (id, email, password_hash, name, account_type, onboarding_completed) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [userId, email, passwordHash, name || null, isSuperAdmin ? "SUPER_ADMIN" : "SELLER", isSuperAdmin]
     );
 
     const token = await createSessionToken({ userId, email });
     await setSessionCookie(token);
 
-    return NextResponse.json({ id: userId, email, name: name || null, onboardingCompleted: false });
+    return NextResponse.json({ id: userId, email, name: name || null, accountType: isSuperAdmin ? "SUPER_ADMIN" : "SELLER", onboardingCompleted: isSuperAdmin });
   } catch (err: any) {
     console.error("Signup error details:", err);
     return NextResponse.json(

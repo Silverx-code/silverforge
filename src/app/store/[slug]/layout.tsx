@@ -4,6 +4,7 @@ import { getPublishedStore } from "@/lib/store-data";
 import { getSession } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { redirect } from "next/navigation";
+import VisitTracker from "./visit-tracker";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ export default async function StoreLayout({
       }
       className="min-h-screen"
     >
-      <CartProvider storeSlug={store.slug}>{children}</CartProvider>
+      <VisitTracker slug={store.slug} /><CartProvider storeSlug={store.slug}>{children}</CartProvider>
     </div>
   );
 }

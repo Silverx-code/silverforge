@@ -2,7 +2,7 @@ export type ButtonStyle = "ROUNDED" | "SQUARE" | "PILL";
 export type SectionType = "HEADER" | "HERO" | "FEATURED_PRODUCTS" | "PROMO_BANNER" | "ABOUT" | "FOOTER";
 export type StockStatus = "IN_STOCK" | "OUT_OF_STOCK";
 export type OrderStatus = "PENDING" | "CONFIRMED" | "FULFILLED" | "CANCELLED";
-export type AccountType = "SELLER" | "CUSTOMER";
+export type AccountType = "SELLER" | "CUSTOMER" | "ADMIN" | "SUPER_ADMIN";
 
 export interface User {
   id: string;

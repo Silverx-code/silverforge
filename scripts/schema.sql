@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   name VARCHAR(255),
-  account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER' CHECK (account_type IN ('SELLER', 'CUSTOMER')),
+  account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER' CHECK (account_type IN ('SELLER', 'CUSTOMER', 'ADMIN', 'SUPER_ADMIN')),
   onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -77,6 +77,16 @@ CREATE TABLE IF NOT EXISTS orders (
 
 CREATE INDEX IF NOT EXISTS idx_orders_store_id ON orders(store_id);
 
+CREATE TABLE IF NOT EXISTS store_visits (
+  id VARCHAR(30) PRIMARY KEY,
+  store_id VARCHAR(30) NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
+  visitor_id VARCHAR(80) NOT NULL,
+  visit_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT unique_daily_store_visitor UNIQUE (store_id, visitor_id, visit_date)
+);
+CREATE INDEX IF NOT EXISTS idx_store_visits_store_date ON store_visits(store_id, visit_date);
+
 CREATE TABLE IF NOT EXISTS order_items (
   id VARCHAR(30) PRIMARY KEY,
   order_id VARCHAR(30) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -88,6 +98,8 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- These keep existing databases compatible when `npm run db:setup` is run again.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS account_type VARCHAR(20) NOT NULL DEFAULT 'SELLER';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_account_type_check;
+ALTER TABLE users ADD CONSTRAINT users_account_type_check CHECK (account_type IN ('SELLER', 'CUSTOMER', 'ADMIN', 'SUPER_ADMIN'));
 ALTER TABLE stores ADD COLUMN IF NOT EXISTS whatsapp_number VARCHAR(20);
 -- Existing store owners have already completed the original creation flow.
 UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE

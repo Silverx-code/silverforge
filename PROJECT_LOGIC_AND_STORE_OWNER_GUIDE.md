@@ -6,6 +6,15 @@ This guide describes the current application, as implemented. SilverForge is a m
 
 ## Required account onboarding
 
+## Roles and admin accounts
+
+- **Customer:** signs up, completes the shopping tutorial, and browses/purchases from published stores.
+- **Seller:** signs up, completes seller onboarding, creates one store, and manages its products, design, and orders.
+- **Admin:** is a platform operations role. It can open `/admin` to view total and unique daily visits across published stores. A Super Admin creates it through `POST /api/admin/users` with a name, email, 12+ character password, and `ADMIN` role; it can then sign in directly at `/login`.
+- **Super Admin:** has the same analytics access and is bootstrapped securely with `SUPER_ADMIN_EMAIL` in `.env`. Create an account using that exact email; on sign-up or next sign-in it is promoted automatically and sent to `/admin`.
+
+Store visits are counted once per browser per store per day using a random browser identifier rather than an IP address. Run `npm run db:setup` to create the tracking table and enable the new roles.
+
 Every new account now completes a short, role-specific tutorial before using account features:
 
 - **Sellers** learn the launch flow, then create their store. Creating that store completes onboarding atomically, so later sign-ins go straight to the dashboard.

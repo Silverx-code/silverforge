@@ -34,7 +34,10 @@ function LoginForm() {
         setError(data?.error ?? `Server returned error (${res.status}). Please verify database connectivity/migrations and environment configuration.`);
         return;
       }
-      const next = searchParams.get("next") ?? (!data?.onboardingCompleted ? "/onboarding" : data?.accountType === "CUSTOMER" ? "/" : "/dashboard");
+      const requestedNext = searchParams.get("next");
+      const defaultDestination = !data?.onboardingCompleted ? "/onboarding" : data?.accountType === "CUSTOMER" ? "/" : data?.accountType === "ADMIN" || data?.accountType === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+      // Do not let an old return URL send a completed seller back into the tour.
+      const next = data?.onboardingCompleted && requestedNext === "/onboarding" ? defaultDestination : requestedNext ?? defaultDestination;
       router.push(next);
       router.refresh();
     } finally {
