@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Signup error details:", err);
     return NextResponse.json(
-      { error: err.message || "Internal server error" },
+      { error: "Unable to create your account right now. Please try again later." },
       { status: 500 }
     );
   }

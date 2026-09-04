@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Login error details:", err);
     return NextResponse.json(
-      { error: err.message || "Internal server error" },
+      { error: "Unable to sign in right now. Please try again later." },
       { status: 500 }
     );
   }
