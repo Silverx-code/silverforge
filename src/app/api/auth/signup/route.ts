@@ -3,13 +3,14 @@ import { z } from "zod";
 import { query } from "@/lib/db";
 import { createSessionToken, setSessionCookie } from "@/lib/auth";
 import { hashPassword } from "@/lib/password";
+import { getPasswordValidationError } from "@/lib/password-policy";
 import { getClientIp, isRateLimited } from "@/lib/rate-limit";
 import { createId } from "@/lib/id";
 
 const signupSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   email: z.string().email(),
-  password: z.string().min(8).max(200),
+  password: z.string(),
 });
 
 export const runtime = "nodejs";
@@ -24,12 +25,14 @@ export async function POST(req: NextRequest) {
     const parsed = signupSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Please provide a valid name, email, and a password of at least 8 characters." },
+        { error: "Please provide a valid name, email, and password." },
         { status: 400 }
       );
     }
 
     const { name, password } = parsed.data;
+    const passwordError = getPasswordValidationError(password);
+    if (passwordError) return NextResponse.json({ error: passwordError }, { status: 400 });
     const email = parsed.data.email.trim().toLowerCase();
 
     const existingRes = await query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);

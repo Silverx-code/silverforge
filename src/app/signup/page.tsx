@@ -4,108 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="flex flex-col gap-2 text-sm"><span className="font-display font-medium text-slate-700">{label}</span>{children}</label>; }
+
+function AuthStory() { return <aside className="relative hidden overflow-hidden bg-slate p-10 text-white lg:flex lg:flex-col"><div className="absolute inset-0 opacity-20 [background-image:radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:22px_22px]" /><div className="relative flex items-center justify-between"><Link href="/" className="font-display text-2xl font-bold tracking-tight text-white">Silver<span className="text-forge-light">Forge</span></Link><span className="rounded border border-white/20 px-2.5 py-1 text-xs font-medium text-slate-200">Refined commerce</span></div><div className="relative my-auto max-w-sm"><span className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-forge-light/30 bg-forge text-xl font-bold">↗</span><p className="mt-8 text-sm font-semibold uppercase tracking-[.2em] text-forge-light">Built to last</p><h2 className="mt-4 font-display text-4xl font-semibold leading-tight">Turn your idea into a store worth visiting.</h2><p className="mt-5 text-base leading-7 text-slate-300">Build your storefront, add your products, and start taking orders with confidence.</p></div><div className="relative grid grid-cols-2 gap-3 border-t border-white/15 pt-6 text-sm"><div><p className="font-display text-2xl font-semibold text-forge-light">01</p><p className="mt-1 text-slate-300">Create your store</p></div><div><p className="font-display text-2xl font-semibold text-forge-light">02</p><p className="mt-1 text-slate-300">Start selling</p></div></div></aside>; }
+
 export default function SignupPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      
-      let data: any = null;
-      try {
-        data = await res.json();
-      } catch (err) {
-        // Response wasn't valid JSON (e.g., server crashed with HTML or empty response)
-      }
-
-      if (!res.ok) {
-        setError(data?.error ?? `Server returned error (${res.status}). Please verify database connectivity/migrations and environment configuration.`);
-        return;
-      }
-      router.push("/onboarding");
-      router.refresh();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
-      <p className="mt-2 text-sm text-ink/60">
-        Start forging your store in a couple of minutes.
-      </p>
-
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-        <Field label="Name">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="input"
-            placeholder="Ada Lovelace"
-            required
-          />
-        </Field>
-        <Field label="Email">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-            placeholder="you@example.com"
-            required
-          />
-        </Field>
-        <Field label="Password">
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-            placeholder="At least 8 characters"
-            minLength={8}
-            required
-          />
-        </Field>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-2 rounded-full bg-ink px-4 py-3 text-paper hover:bg-ink/90 disabled:opacity-50"
-        >
-          {loading ? "Creating account…" : "Create account"}
-        </button>
-      </form>
-
-      <p className="mt-6 text-sm text-ink/60">
-        Already have a store?{" "}
-        <Link href="/login" className="underline">
-          Log in
-        </Link>
-      </p>
-    </main>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="text-ink/70">{label}</span>
-      {children}
-    </label>
-  );
+  const router = useRouter(); const [name, setName] = useState(""); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [error, setError] = useState<string | null>(null); const [loading, setLoading] = useState(false);
+  async function handleSubmit(e: React.FormEvent) { e.preventDefault(); setError(null); setLoading(true); try { const res = await fetch("/api/auth/signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, password }) }); const data = await res.json().catch(() => null); if (!res.ok) { setError(data?.error ?? `Server returned error (${res.status}). Please try again.`); return; } router.push("/onboarding"); router.refresh(); } finally { setLoading(false); } }
+  return <main className="min-h-screen bg-canvas p-4 sm:p-6 lg:p-8"><div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-6xl overflow-hidden rounded-2xl border border-slate-300/80 bg-white shadow-forge lg:min-h-[680px] lg:grid-cols-[.92fr_1.08fr]"><AuthStory /><section className="flex items-center px-5 py-10 sm:px-10 lg:px-16"><div className="mx-auto w-full max-w-md"><Link href="/" className="font-display text-2xl font-bold tracking-tight text-forge lg:hidden">SilverForge</Link><p className="mt-8 text-xs font-semibold uppercase tracking-[.2em] text-forge">Launch your store</p><h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-slate sm:text-4xl">Create your account.</h1><p className="mt-3 text-sm leading-6 text-slate-600">Set up your seller account, then we&apos;ll help you shape your first storefront.</p><form onSubmit={handleSubmit} className="mt-8 space-y-5"><Field label="Your name"><input autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className="input w-full py-3" placeholder="Ada Lovelace" required /></Field><Field label="Email address"><input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input w-full py-3" placeholder="you@example.com" required /></Field><Field label="Create a password"><input type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className="input w-full py-3" placeholder="At least 8 characters" minLength={8} required /></Field>{error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</p>}<button type="submit" disabled={loading} className="forge-button flex w-full items-center justify-center gap-2 py-3 text-base">{loading ? "Creating your account..." : "Create your seller account"}{!loading && <span aria-hidden="true">→</span>}</button></form><p className="mt-7 border-t pt-6 text-center text-sm text-slate-600">Already have an account? <Link href="/login" className="font-semibold text-forge underline decoration-forge/40 underline-offset-4 hover:text-forge-dark">Sign in</Link></p></div></section></div></main>;
 }

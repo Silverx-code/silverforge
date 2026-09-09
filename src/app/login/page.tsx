@@ -4,6 +4,16 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="flex flex-col gap-2 text-sm"><span className="font-display font-medium text-slate-700">{label}</span>{children}</label>;
+}
+
+function AuthStory({ login = false }: { login?: boolean }) {
+  const heading = login ? "Your business is ready for its next move." : "Turn your idea into a store worth visiting.";
+  const detail = login ? "Pick up where you left off with a focused workspace for the work that matters." : "Build your storefront, add your products, and start taking orders with confidence.";
+  return <aside className="relative hidden overflow-hidden bg-slate p-10 text-white lg:flex lg:flex-col"><div className="absolute inset-0 opacity-20 [background-image:radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:22px_22px]" /><div className="relative flex items-center justify-between"><Link href="/" className="font-display text-2xl font-bold tracking-tight text-white">Silver<span className="text-forge-light">Forge</span></Link><span className="rounded border border-white/20 px-2.5 py-1 text-xs font-medium text-slate-200">Refined commerce</span></div><div className="relative my-auto max-w-sm"><span className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-forge-light/30 bg-forge text-xl font-bold">↗</span><p className="mt-8 text-sm font-semibold uppercase tracking-[.2em] text-forge-light">Built to last</p><h2 className="mt-4 font-display text-4xl font-semibold leading-tight">{heading}</h2><p className="mt-5 text-base leading-7 text-slate-300">{detail}</p></div><div className="relative grid grid-cols-2 gap-3 border-t border-white/15 pt-6 text-sm"><div><p className="font-display text-2xl font-semibold text-forge-light">01</p><p className="mt-1 text-slate-300">Create your store</p></div><div><p className="font-display text-2xl font-semibold text-forge-light">02</p><p className="mt-1 text-slate-300">Start selling</p></div></div></aside>;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,90 +23,18 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+    e.preventDefault(); setError(null); setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      let data: any = null;
-      try {
-        data = await res.json();
-      } catch (err) {
-        // Response wasn't valid JSON
-      }
-
-      if (!res.ok) {
-        setError(data?.error ?? `Server returned error (${res.status}). Please verify database connectivity/migrations and environment configuration.`);
-        return;
-      }
+      const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) { setError(data?.error ?? `Server returned error (${res.status}). Please try again.`); return; }
       const requestedNext = searchParams.get("next");
-      const defaultDestination = !data?.onboardingCompleted ? "/onboarding" : data?.accountType === "CUSTOMER" ? "/" : data?.accountType === "ADMIN" || data?.accountType === "SUPER_ADMIN" ? "/admin" : "/dashboard";
-      // Do not let an old return URL send a completed seller back into the tour.
-      const next = data?.onboardingCompleted && requestedNext === "/onboarding" ? defaultDestination : requestedNext ?? defaultDestination;
-      router.push(next);
-      router.refresh();
-    } finally {
-      setLoading(false);
-    }
+      const destination = !data?.onboardingCompleted ? "/onboarding" : data?.accountType === "CUSTOMER" ? "/" : data?.accountType === "ADMIN" || data?.accountType === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+      router.push(data?.onboardingCompleted && requestedNext === "/onboarding" ? destination : requestedNext ?? destination); router.refresh();
+    } finally { setLoading(false); }
   }
 
-  return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-      <p className="mt-2 text-sm text-ink/60">Log in to manage your store.</p>
-
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-ink/70">Email</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-            required
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-ink/70">Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-            required
-          />
-        </label>
-
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-2 rounded-full bg-ink px-4 py-3 text-paper hover:bg-ink/90 disabled:opacity-50"
-        >
-          {loading ? "Logging in…" : "Log in"}
-        </button>
-      </form>
-
-      <p className="mt-6 text-sm text-ink/60">
-        New to SilverForge?{" "}
-        <Link href="/signup" className="underline">
-          Create your store
-        </Link>
-      </p>
-    </main>
-  );
+  return <main className="min-h-screen bg-canvas p-4 sm:p-6 lg:p-8"><div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-6xl overflow-hidden rounded-2xl border border-slate-300/80 bg-white shadow-forge lg:min-h-[680px] lg:grid-cols-[.92fr_1.08fr]"><AuthStory login /><section className="flex items-center px-5 py-10 sm:px-10 lg:px-16"><div className="mx-auto w-full max-w-md"><Link href="/" className="font-display text-2xl font-bold tracking-tight text-forge lg:hidden">SilverForge</Link><p className="mt-8 text-xs font-semibold uppercase tracking-[.2em] text-forge">Merchant workspace</p><h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-slate sm:text-4xl">Welcome back.</h1><p className="mt-3 text-sm leading-6 text-slate-600">Sign in to manage your store, products, and customer orders.</p><form onSubmit={handleSubmit} className="mt-8 space-y-5"><Field label="Email address"><input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input w-full py-3" placeholder="you@example.com" required /></Field><Field label="Password"><input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="input w-full py-3" placeholder="Enter your password" required /></Field>{error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">{error}</p>}<button type="submit" disabled={loading} className="forge-button flex w-full items-center justify-center gap-2 py-3 text-base">{loading ? "Signing in..." : "Sign in to your workspace"}{!loading && <span aria-hidden="true">→</span>}</button></form><p className="mt-7 border-t pt-6 text-center text-sm text-slate-600">New to SilverForge? <Link href="/signup" className="font-semibold text-forge underline decoration-forge/40 underline-offset-4 hover:text-forge-dark">Create your seller account</Link></p></div></section></div></main>;
 }
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
-  );
-}
+export default function LoginPage() { return <Suspense fallback={null}><LoginForm /></Suspense>; }

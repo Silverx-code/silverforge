@@ -32,7 +32,9 @@ export function toProduct(row: Row): Product {
 }
 
 export async function getPublishedStore(slug: string): Promise<Store | null> {
-  const result = await query("SELECT * FROM stores WHERE slug = $1 AND is_published = true LIMIT 1", [slug]);
+  const normalizedSlug = slug.trim().toLowerCase();
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug)) return null;
+  const result = await query("SELECT * FROM stores WHERE slug = $1 AND is_published = true LIMIT 1", [normalizedSlug]);
   return result.rows[0] ? toStore(result.rows[0]) : null;
 }
 
