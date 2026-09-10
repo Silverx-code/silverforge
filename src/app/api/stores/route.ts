@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { PoolClient } from "pg";
 import { z } from "zod";
 import { pool, query } from "@/lib/db";
 import { getSession } from "@/lib/auth";
@@ -52,32 +53,33 @@ const DEFAULT_SECTIONS = [
 ];
 
 export async function POST(req: NextRequest) {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
-  }
-
-  const body = await req.json().catch(() => null);
-  const parsed = createStoreSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Invalid store details." },
-      { status: 400 }
-    );
-  }
-
-  const client = await pool.connect();
+  let client: PoolClient | undefined;
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
+    }
+
+    const body = await req.json().catch(() => null);
+    const parsed = createStoreSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid store details." },
+        { status: 400 }
+      );
+    }
+
+    client = await pool.connect();
     await client.query("BEGIN");
 
     // MVP: one store per user.
-    const existingRes = await client.query(`SELECT id FROM stores WHERE owner_id = $1 LIMIT 1`, [session.userId]);
+    const existingRes = await client.query(`SELECT * FROM stores WHERE owner_id = $1 LIMIT 1`, [session.userId]);
     if (existingRes.rows.length > 0) {
       await client.query("ROLLBACK");
-      return NextResponse.json(
-        { error: "You already have a store. Multi-store per user isn't supported yet." },
-        { status: 409 }
-      );
+      // The first request may have committed successfully before a browser or
+      // network failure. Treat a retry as successful so the seller can reach
+      // the workspace instead of being stranded in onboarding.
+      return NextResponse.json({ ...existingRes.rows[0], alreadyExisted: true });
     }
 
     const slugRes = await client.query(`SELECT id FROM stores WHERE slug = $1 LIMIT 1`, [parsed.data.slug]);
@@ -115,9 +117,10 @@ export async function POST(req: NextRequest) {
     const newStoreRes = await query(`SELECT * FROM stores WHERE id = $1`, [storeId]);
     return NextResponse.json(newStoreRes.rows[0], { status: 201 });
   } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
+    if (client) await client.query("ROLLBACK").catch(() => undefined);
+    console.error("Failed to create store", err);
+    return NextResponse.json({ error: "We couldn't create your store right now. Please try again." }, { status: 500 });
   } finally {
-    client.release();
+    client?.release();
   }
 }

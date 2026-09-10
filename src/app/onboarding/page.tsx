@@ -9,6 +9,19 @@ const sellerSteps = [["Create your storefront", "Choose a business name, descrip
 
 function slugify(input: string) { return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""); }
 
+async function readApiResponse(res: Response) {
+  const body = await res.text();
+  if (!body) {
+    throw new Error(`The server returned an empty response (${res.status}). Please try again. If it continues, check the server logs.`);
+  }
+
+  try {
+    return JSON.parse(body) as { error?: string };
+  } catch {
+    throw new Error(`The server returned an invalid response (${res.status}). Please try again. If it continues, check the server logs.`);
+  }
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1); const [role, setRole] = useState<Role | null>(null);
@@ -18,15 +31,16 @@ export default function OnboardingPage() {
 
   async function complete(accountType: "SELLER" | "CUSTOMER") {
     const res = await fetch("/api/auth/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accountType }) });
-    const data = await res.json(); if (!res.ok) throw new Error(data.error ?? "We couldn't finish the tutorial.");
+    const data = await readApiResponse(res); if (!res.ok) throw new Error(data.error ?? "We couldn't finish the tutorial.");
   }
   async function finishCustomer() { setLoading(true); setError(null); try { await complete("CUSTOMER"); router.push("/"); router.refresh(); } catch (e) { setError(e instanceof Error ? e.message : "We couldn't finish the tutorial."); } finally { setLoading(false); } }
   async function createStore() {
     setLoading(true); setError(null);
     try {
       const res = await fetch("/api/stores", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, description, whatsappNumber, slug }) });
-      const data = await res.json(); if (!res.ok) throw new Error(data.error ?? "We couldn't create your store.");
-      await complete("SELLER"); router.push("/dashboard"); router.refresh();
+      const data = await readApiResponse(res); if (!res.ok) throw new Error(data.error ?? "We couldn't create your store.");
+      // Store creation atomically completes seller onboarding on the server.
+      router.push("/dashboard"); router.refresh();
     } catch (e) { setError(e instanceof Error ? e.message : "We couldn't create your store."); } finally { setLoading(false); }
   }
 
