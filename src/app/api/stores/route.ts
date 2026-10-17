@@ -54,11 +54,13 @@ const DEFAULT_SECTIONS = [
 
 export async function POST(req: NextRequest) {
   let client: PoolClient | undefined;
+  let ownerId: string | undefined;
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
     }
+    ownerId = session.userId;
 
     const body = await req.json().catch(() => null);
     const parsed = createStoreSchema.safeParse(body);
@@ -71,6 +73,10 @@ export async function POST(req: NextRequest) {
 
     client = await pool.connect();
     await client.query("BEGIN");
+
+    // Serialize store creation for this account. The unique URL constraint
+    // still handles requests that race on different account locks.
+    await client.query("SELECT id FROM users WHERE id = $1 FOR UPDATE", [session.userId]);
 
     // MVP: one store per user.
     const existingRes = await client.query(`SELECT * FROM stores WHERE owner_id = $1 LIMIT 1`, [session.userId]);
@@ -108,7 +114,7 @@ export async function POST(req: NextRequest) {
     // Creating the store is the final seller-onboarding step. Keep the state
     // change in this transaction so a seller is never asked to onboard again.
     await client.query(
-      "UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE WHERE id = $1",
+      "UPDATE users SET account_type = CASE WHEN account_type IN ('ADMIN', 'SUPER_ADMIN') THEN account_type ELSE 'SELLER' END, onboarding_completed = TRUE WHERE id = $1",
       [session.userId]
     );
 
@@ -118,6 +124,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(newStoreRes.rows[0], { status: 201 });
   } catch (err) {
     if (client) await client.query("ROLLBACK").catch(() => undefined);
+    if ((err as { code?: string }).code === "23505") {
+      const existingStore = ownerId
+        ? await query("SELECT * FROM stores WHERE owner_id = $1 LIMIT 1", [ownerId]).catch(() => ({ rows: [] }))
+        : { rows: [] };
+      if (existingStore.rows[0]) return NextResponse.json({ ...existingStore.rows[0], alreadyExisted: true });
+      return NextResponse.json({ error: "That store address is already taken." }, { status: 409 });
+    }
     console.error("Failed to create store", err);
     return NextResponse.json({ error: "We couldn't create your store right now. Please try again." }, { status: 500 });
   } finally {

@@ -3,12 +3,13 @@ import { z } from "zod";
 import { query } from "@/lib/db";
 import { getOwnedStore } from "@/lib/tenant";
 import { createId } from "@/lib/id";
+import { isHttpUrl } from "@/lib/url";
 
 const createProductSchema = z.object({
   name: z.string().min(1).max(160),
   description: z.string().max(2000).optional(),
   price: z.number().positive(),
-  image: z.string().url().optional().nullable(),
+  image: z.string().url().refine(isHttpUrl, "Use an HTTP or HTTPS image URL.").optional().nullable(),
   stockStatus: z.enum(["IN_STOCK", "OUT_OF_STOCK"]).optional(),
   inventoryQuantity: z.number().int().min(0).max(1_000_000).default(0),
 });

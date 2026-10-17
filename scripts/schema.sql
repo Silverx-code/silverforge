@@ -9,7 +9,10 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TYPE button_style AS ENUM ('ROUNDED', 'SQUARE', 'PILL');
+DO $$ BEGIN
+  CREATE TYPE button_style AS ENUM ('ROUNDED', 'SQUARE', 'PILL');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS stores (
   id VARCHAR(30) PRIMARY KEY,
@@ -28,7 +31,10 @@ CREATE TABLE IF NOT EXISTS stores (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TYPE section_type AS ENUM ('HEADER', 'HERO', 'FEATURED_PRODUCTS', 'PROMO_BANNER', 'ABOUT', 'FOOTER');
+DO $$ BEGIN
+  CREATE TYPE section_type AS ENUM ('HEADER', 'HERO', 'FEATURED_PRODUCTS', 'PROMO_BANNER', 'ABOUT', 'FOOTER');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS sections (
   id VARCHAR(30) PRIMARY KEY,
@@ -44,7 +50,10 @@ CREATE TABLE IF NOT EXISTS sections (
 
 CREATE INDEX IF NOT EXISTS idx_sections_store_order ON sections(store_id, section_order);
 
-CREATE TYPE stock_status AS ENUM ('IN_STOCK', 'OUT_OF_STOCK');
+DO $$ BEGIN
+  CREATE TYPE stock_status AS ENUM ('IN_STOCK', 'OUT_OF_STOCK');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS products (
   id VARCHAR(30) PRIMARY KEY,
@@ -61,7 +70,10 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE INDEX IF NOT EXISTS idx_products_store_id ON products(store_id);
 
-CREATE TYPE order_status AS ENUM ('PENDING', 'CONFIRMED', 'FULFILLED', 'CANCELLED');
+DO $$ BEGIN
+  CREATE TYPE order_status AS ENUM ('PENDING', 'CONFIRMED', 'FULFILLED', 'CANCELLED');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS orders (
   id VARCHAR(30) PRIMARY KEY,
@@ -87,6 +99,13 @@ CREATE TABLE IF NOT EXISTS store_visits (
 );
 CREATE INDEX IF NOT EXISTS idx_store_visits_store_date ON store_visits(store_id, visit_date);
 
+CREATE TABLE IF NOT EXISTS rate_limit_buckets (
+  bucket_key TEXT PRIMARY KEY,
+  request_count INTEGER NOT NULL,
+  reset_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rate_limit_buckets_reset_at ON rate_limit_buckets(reset_at);
+
 CREATE TABLE IF NOT EXISTS order_items (
   id VARCHAR(30) PRIMARY KEY,
   order_id VARCHAR(30) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -103,7 +122,8 @@ ALTER TABLE users ADD CONSTRAINT users_account_type_check CHECK (account_type IN
 ALTER TABLE stores ADD COLUMN IF NOT EXISTS whatsapp_number VARCHAR(20);
 -- Existing store owners have already completed the original creation flow.
 UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE
-WHERE EXISTS (SELECT 1 FROM stores WHERE stores.owner_id = users.id);
+WHERE account_type IN ('SELLER', 'CUSTOMER')
+  AND EXISTS (SELECT 1 FROM stores WHERE stores.owner_id = users.id);
 
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$
 BEGIN

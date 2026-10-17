@@ -3,11 +3,12 @@ import { z } from "zod";
 import { query } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { Store } from "@/types/db";
+import { isHttpUrl } from "@/lib/url";
 
 const updateStoreSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   description: z.string().max(500).optional(),
-  logo: z.string().url().optional().nullable(),
+  logo: z.string().url().refine(isHttpUrl, "Use an HTTP or HTTPS image URL.").optional().nullable(),
   whatsappNumber: z.string().transform((value) => value.replace(/\D/g, "")).refine((value) => value.length >= 8 && value.length <= 15, "Enter a WhatsApp number with country code.").optional().nullable(),
   primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),

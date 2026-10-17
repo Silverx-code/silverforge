@@ -25,14 +25,15 @@ export function getDatabaseConnectionString() {
 // issuer is trusted by the Vercel runtime. The existing default supports
 // managed PostgreSQL providers that use a self-signed/private chain.
 const rejectUnauthorized = process.env.DATABASE_SSL_REJECT_UNAUTHORIZED === "true";
+const databaseHost = new URL(getDatabaseConnectionString()).hostname;
+const isLocalDatabase = databaseHost === "localhost" || databaseHost === "127.0.0.1" || databaseHost === "::1";
+const useSsl = process.env.DATABASE_SSL === "true" || (process.env.DATABASE_SSL !== "false" && !isLocalDatabase);
 
 export const pool =
   globalForDb.pool ??
   new Pool({
     connectionString: getDatabaseConnectionString(),
-    ssl: {
-      rejectUnauthorized,
-    },
+    ssl: useSsl ? { rejectUnauthorized } : undefined,
   });
 
 if (process.env.NODE_ENV !== "production") {

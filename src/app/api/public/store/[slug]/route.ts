@@ -21,7 +21,6 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
 
   const formattedStore = {
     id: storeRow.id,
-    ownerId: storeRow.owner_id,
     name: storeRow.name,
     slug: storeRow.slug,
     description: storeRow.description,
@@ -52,7 +51,6 @@ export async function GET(_req: NextRequest, { params }: { params: { slug: strin
       price: Number(p.price),
       image: p.image,
       stockStatus: p.stock_status,
-      inventoryQuantity: p.inventory_quantity,
       createdAt: p.created_at,
       updatedAt: p.updated_at,
     })),

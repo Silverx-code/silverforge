@@ -11,7 +11,7 @@ const checkoutSchema = z.object({
 });
 
 export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
-  if (isRateLimited(`checkout:${getClientIp(req.headers)}`, 10, 60_000)) return NextResponse.json({ error: "Too many checkout attempts. Please wait a minute and try again." }, { status: 429 });
+  if (await isRateLimited(`checkout:${getClientIp(req.headers)}`, 10, 60_000)) return NextResponse.json({ error: "Too many checkout attempts. Please wait a minute and try again." }, { status: 429 });
   
   const storeRes = await query(`SELECT * FROM stores WHERE slug = $1 LIMIT 1`, [params.slug]);
   const store = storeRes.rows[0];

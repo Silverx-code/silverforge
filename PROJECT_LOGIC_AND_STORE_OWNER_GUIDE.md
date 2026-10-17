@@ -11,7 +11,7 @@ This guide describes the current application, as implemented. SilverForge is a m
 - **Customer:** signs up, completes the shopping tutorial, and browses/purchases from published stores.
 - **Seller:** signs up, completes seller onboarding, creates one store, and manages its products, design, and orders.
 - **Admin:** is a platform operations role. It can open `/admin` to view total and unique daily visits across published stores. A Super Admin creates it through `POST /api/admin/users` with a name, email, 12+ character password, and `ADMIN` role; it can then sign in directly at `/login`.
-- **Super Admin:** has the same analytics access and is bootstrapped securely with `SUPER_ADMIN_EMAIL` in `.env`. Create an account using that exact email; on sign-up or next sign-in it is promoted automatically and sent to `/admin`.
+- **Super Admin:** has the same analytics access. Public signup never grants platform roles. An operator bootstraps the initial account with `SUPER_ADMIN_BOOTSTRAP_EMAIL` and `SUPER_ADMIN_BOOTSTRAP_PASSWORD` set in a secure shell, then runs `npm run admin:bootstrap`. The command creates or resets that account and assigns the role; remove the bootstrap values afterward.
 
 Store visits are counted once per browser per store per day using a random browser identifier rather than an IP address. Run `npm run db:setup` to create the tracking table and enable the new roles.
 
@@ -25,7 +25,7 @@ The `users` table records the selected `account_type` (`SELLER` or `CUSTOMER`) a
 
 ### 1. Create a seller account and store
 
-1. Open `/signup`, enter a name, email address, and password (at least eight characters).
+1. Open `/signup`, enter a name, email address, and a password that meets the displayed password policy.
 2. Complete onboarding and choose **I want to sell**.
 3. Enter the store name and description.
 4. Confirm a unique URL slug. For example, `ada-crafts` produces `/store/ada-crafts`. Slugs may contain lowercase letters, numbers, and single dashes.
@@ -149,7 +149,7 @@ Customer storefront ─► public store/checkout API ┘
 | `src/lib/id.ts` | Generates cryptographically random, URL-safe IDs with entity prefixes such as `usr_`, `sto_`, and `prd_`. |
 | `src/lib/auth.ts` | Signs/verifies seven-day HS256 JWTs and manages the HTTP-only `sf_session` cookie. |
 | `src/lib/password.ts` | Hashes and verifies passwords using bcrypt. |
-| `src/lib/rate-limit.ts` | Provides a process-local, IP-keyed request throttle for sign-in, sign-up, and checkout. A shared backing store is needed for multi-instance production. |
+| `src/lib/rate-limit.ts` | Provides a PostgreSQL-backed, IP-keyed request throttle for sign-in, sign-up, and checkout. Configure the deployment proxy to supply a trusted `x-real-ip` or append the client address to `x-forwarded-for`. |
 | `src/lib/money.ts` | Uses `decimal.js` to calculate precise order totals. |
 | `src/lib/tenant.ts` | Resolves the current session's owned store; the protected API routes depend on it for tenant isolation. |
 | `src/lib/store-data.ts` | Converts SQL rows to app types and loads a published store, its visible sections, and products for the public storefront. |

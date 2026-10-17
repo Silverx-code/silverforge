@@ -1,4 +1,4 @@
-import { pool } from "../src/lib/db";
+import { loadEnvConfig } from "@next/env";
 import { hashPassword } from "../src/lib/password";
 import { createId } from "../src/lib/id";
 
@@ -10,7 +10,12 @@ const sections = [
   { sectionType: "FOOTER", sectionOrder: 4, content: { text: "Built with precision." } },
 ];
 
+let poolToClose: import("pg").Pool | undefined;
+
 async function main() {
+  loadEnvConfig(process.cwd());
+  const { pool } = await import("../src/lib/db");
+  poolToClose = pool;
   const passwordHash = await hashPassword("demo-password-123");
   
   // Upsert user
@@ -74,4 +79,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => pool.end());
+  .finally(() => poolToClose?.end());

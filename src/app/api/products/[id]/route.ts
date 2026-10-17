@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { query } from "@/lib/db";
 import { getOwnedStore } from "@/lib/tenant";
+import { isHttpUrl } from "@/lib/url";
 
 const updateProductSchema = z.object({
   name: z.string().min(1).max(160).optional(),
   description: z.string().max(2000).optional(),
   price: z.number().positive().optional(),
-  image: z.string().url().optional().nullable(),
+  image: z.string().url().refine(isHttpUrl, "Use an HTTP or HTTPS image URL.").optional().nullable(),
   stockStatus: z.enum(["IN_STOCK", "OUT_OF_STOCK"]).optional(),
   inventoryQuantity: z.number().int().min(0).max(1_000_000).optional(),
 });

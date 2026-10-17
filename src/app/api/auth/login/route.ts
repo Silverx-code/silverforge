@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    if (isRateLimited(`login:${getClientIp(req.headers)}`, 10, 15 * 60_000)) {
+    if (await isRateLimited(`login:${getClientIp(req.headers)}`, 10, 15 * 60_000)) {
       return NextResponse.json({ error: "Too many sign-in attempts. Please try again later." }, { status: 429 });
     }
     const body = await req.json().catch(() => null);
@@ -40,13 +40,12 @@ export async function POST(req: NextRequest) {
 
     // A store is definitive proof that this seller has finished setup. This
     // also repairs accounts created before onboarding state was introduced.
-    const isSuperAdmin = email === process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-    if (isSuperAdmin && user.account_type !== "SUPER_ADMIN") await query("UPDATE users SET account_type = 'SUPER_ADMIN', onboarding_completed = TRUE WHERE id = $1", [user.id]);
     const storeRes = await query(`SELECT id FROM stores WHERE owner_id = $1 LIMIT 1`, [user.id]);
     const ownsStore = storeRes.rows.length > 0;
-    const onboardingCompleted = isSuperAdmin || ownsStore || Boolean(user.onboarding_completed);
-    const accountType = isSuperAdmin ? "SUPER_ADMIN" : ownsStore ? "SELLER" : user.account_type;
-    if (ownsStore && (!user.onboarding_completed || user.account_type !== "SELLER")) {
+    const isPlatformAdmin = user.account_type === "ADMIN" || user.account_type === "SUPER_ADMIN";
+    const onboardingCompleted = ownsStore || Boolean(user.onboarding_completed);
+    const accountType = ownsStore && !isPlatformAdmin ? "SELLER" : user.account_type;
+    if (ownsStore && !isPlatformAdmin && (!user.onboarding_completed || user.account_type !== "SELLER")) {
       await query(
         "UPDATE users SET account_type = 'SELLER', onboarding_completed = TRUE WHERE id = $1",
         [user.id]

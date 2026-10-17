@@ -32,21 +32,22 @@ export function CartProvider({
   children: React.ReactNode;
 }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [hydratedSlug, setHydratedSlug] = useState<string | null>(null);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(storageKey(storeSlug));
-    if (raw) {
-      try {
-        setItems(JSON.parse(raw));
-      } catch {
-        // ignore corrupt cart data
-      }
+    try {
+      const raw = window.localStorage.getItem(storageKey(storeSlug));
+      setItems(raw ? JSON.parse(raw) : []);
+    } catch {
+      setItems([]);
     }
+    setHydratedSlug(storeSlug);
   }, [storeSlug]);
 
   useEffect(() => {
+    if (hydratedSlug !== storeSlug) return;
     window.localStorage.setItem(storageKey(storeSlug), JSON.stringify(items));
-  }, [items, storeSlug]);
+  }, [items, storeSlug, hydratedSlug]);
 
   function addItem(item: Omit<CartItem, "quantity">, quantity = 1) {
     setItems((prev) => {

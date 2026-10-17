@@ -13,7 +13,11 @@ type Order = {
   items: { id: string; quantity: number; product: { name: string } }[];
 };
 
-const STATUS_OPTIONS: Order["status"][] = ["PENDING", "CONFIRMED", "FULFILLED", "CANCELLED"];
+function allowedStatuses(current: Order["status"]): Order["status"][] {
+  if (current === "PENDING") return ["PENDING", "CONFIRMED", "CANCELLED"];
+  if (current === "CONFIRMED") return ["CONFIRMED", "FULFILLED", "CANCELLED"];
+  return [current];
+}
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[] | null>(null);
@@ -25,12 +29,20 @@ export default function OrdersPage() {
   }, []);
 
   async function updateStatus(order: Order, status: Order["status"]) {
-    setOrders((prev) => prev!.map((o) => (o.id === order.id ? { ...o, status } : o)));
-    await fetch(`/api/orders/${order.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+    const previous = orders;
+    setOrders((prev) => prev?.map((o) => (o.id === order.id ? { ...o, status } : o)) ?? null);
+    try {
+      const response = await fetch(`/api/orders/${order.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (response.ok) return;
+    } catch {
+      // Restore the server's current state below if the request failed.
+    }
+    const fresh = await fetch("/api/orders").then((res) => res.json()).catch(() => previous);
+    setOrders(fresh);
   }
 
   return (
@@ -60,7 +72,7 @@ export default function OrdersPage() {
               onChange={(e) => updateStatus(order, e.target.value as Order["status"])}
               className="input"
             >
-              {STATUS_OPTIONS.map((s) => (
+              {allowedStatuses(order.status).map((s) => (
                 <option key={s} value={s}>
                   {s.charAt(0) + s.slice(1).toLowerCase()}
                 </option>
